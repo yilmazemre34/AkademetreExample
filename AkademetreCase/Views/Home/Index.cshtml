@@ -1,0 +1,116 @@
+﻿@model IEnumerable<AkademetreCase.Models.Info>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-6" style="margin-top: 5%;">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="Name">Name</label>
+                        <input type="text" id="Name" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="SurName">SurName</label>
+                        <input type="text" id="SurName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Email">Email</label>
+                        <input type="email" id="Email" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Address">Address</label>
+                        <input type="text" id="Address" class="form-control" />
+                    </div>
+                    <button class="btn btn-success" id="addData">Gönder</button>
+                    <button class="btn btn-success" id="btnSave">Excel'e Aktar</button>
+                </div>
+                <br />
+            </div>
+            <div class="col-md-6" style="margin-top:5%;">
+                <table id="table">
+                    <thead>
+                        <tr>
+                            <th>İsim</th>
+                            <th>Soyisim</th>
+                            <th>Email</th>
+                            <th>Adres</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                              @foreach(var item in Model)
+                              {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.SurName</td>
+                            <td>@item.Email</td>
+                            <td>@item.Address</td>
+                        </tr>
+                              }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+
+        $(document).on('click', '#addData', function () {
+
+            var name = $('#Name').val();
+            var surName = $('#SurName').val();
+            var email = $('#Email').val();
+            var address = $('#Address').val();
+            var data = JSON.stringify({ 'Name': name, 'SurName': surName, 'Email': email, 'Address': address });
+
+
+            console.log(name);
+            $.ajax({
+                url: "/Home/Index",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                data: data,
+                success: function (result) {
+                    console.log(result.name)
+                },
+                error: function () {
+
+                }
+            });
+        })
+
+        $('#btnSave').click(function () {
+            $.ajax({
+                url: "/Home/ExportExcel",
+                type: "POST",
+                data: JSON.stringify({ 'Options': someData }),
+                dataType: "json",
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.status == "Success") {
+                        alert("Done");
+                    } else {
+                        alert("Error occurs on the Database level!");
+                    }
+                },
+                error: function () {
+                    alert("An error has occured!!!");
+                }
+            });
+        });
+
+
+        $(document).ready(function () {
+            $('#table_id').DataTable();
+        });
+
+    </script>
+
+}
